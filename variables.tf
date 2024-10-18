@@ -96,19 +96,6 @@ variable "language_extensions" {
     image = string
   }))
   default = []
-
-  validation {
-    condition = length([for ext in var.language_extensions :
-    true if contains(["R", "PYTHON"], ext.name)]) == length(var.language_extensions)
-    error_message = "Only 'R' and 'PYTHON' are supported language extensions"
-  }
-
-  validation {
-    condition = length([for ext in var.language_extensions :
-      true if((contains(["Python3_6_5", "Python3_10_8"], ext.image) && ext.name == "PYTHON") ||
-    (contains(["R"], ext.image) && ext.name == "R"))]) == length(var.language_extensions)
-    error_message = "Only 'Python3_6_5', 'Python3_10_8' are valid images for 'PYTHON' language extension and 'R' is valid image for 'R' language extension"
-  }
 }
 
 variable "trusted_external_tenants" {
