@@ -91,8 +91,24 @@ variable "purge_enabled" {
 
 variable "language_extensions" {
   description = "A list of language_extensions to enable"
-  type        = set(string)
-  default     = ["PYTHON_3.10.8", "R"]
+  type = list(object({
+    name  = string
+    image = string
+  }))
+  default = []
+
+  validation {
+    condition = length([for ext in var.language_extensions :
+    true if contains(["R", "Python"], ext.name)]) == length(var.language_extensions)
+    error_message = "Only 'R' and 'Python' are supported language extensions"
+  }
+
+  validation {
+    condition = length([for ext in var.language_extensions :
+      true if((contains(["Python3_6_5", "Python3_10_8"], ext.image) && ext.name == "Python") ||
+    (contains(["R"], ext.image) && ext.name == "R"))]) == length(var.language_extensions)
+    error_message = "Only 'Python3_6_5', 'Python3_10_8' are valid images for 'Python' language extension and 'R' is valid image for 'R' language extension"
+  }
 }
 
 variable "trusted_external_tenants" {

@@ -14,12 +14,20 @@ resource "azurerm_kusto_cluster" "this" {
   public_network_access_enabled      = var.public_network_access_enabled
   outbound_network_access_restricted = var.outbound_network_access_restricted
   purge_enabled                      = var.purge_enabled
-  language_extensions                = var.language_extensions
   trusted_external_tenants           = var.trusted_external_tenants
   zones                              = var.zones
   sku {
     name     = var.sku_name
     capacity = var.sku_capacity
+  }
+
+  dynamic "language_extensions" {
+    for_each = var.language_extensions
+
+    content {
+      name  = language_extensions.value.name
+      image = language_extensions.value.image
+    }
   }
 
   dynamic "virtual_network_configuration" {
